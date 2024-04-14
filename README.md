@@ -1,6 +1,6 @@
 # Socket-Server
 
-This README provides instructions on how to set up and run the project. The Setup is divided into 2 parts which are setting up the messenger server and setting up the Socket server
+This README provides instructions on how to set up and run the project. server
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ Follow these steps to get the project up and running on your local machine for d
 First, clone the main application repository to your local machine using the following command:
 
 ```bash
-git clone https://github.com/shubhamiu/Messenger-server.git
-cd Messenger-server
+git clone https://github.com/shubhamiu/Socket.git
+cd Socket
 ```
 
 ### 2. Install Dependencies
@@ -37,11 +37,11 @@ npm start
 
 This command will start the development server, usually accessible via `http://localhost:8900` or a similar URL provided in the terminal.
 
-Ensure that the Messenger server is running correctly and listening for connections, typically on a different port specified in its configuration.
+Ensure that the Messenger server and Socket server is running correctly and listening for connections, typically on a different port specified in its configuration.
 
 ## Usage
 
-With both the main application and the Messenger server running, you should now be able to interact with the application through your web browser and see real-time functionalities being handled by the socket server.
+With both the main application  the Messenger server running and the socket server running, you should now be able to interact with the application through your web browser and see real-time functionalities being handled by the socket server.
 
 ## Troubleshooting
 
