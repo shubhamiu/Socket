@@ -1,16 +1,14 @@
-const io = require("socket.io")(8900, {
+require("dotenv").config();
+
+const io = require("socket.io")(process.env.PORT, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.CLIENT_ORIGIN,
   },
 });
 
-const axios = require("axios")
+const axios = require("axios");
 
 let users = [];
- 
-
-
-
 
 const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
@@ -35,52 +33,41 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
   });
 
-  
-
   //send and get message
-socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-  
-  const user = getUser(receiverId);
-  if (user && user.socketId) {
-    // Send message to receiver if they are online and socketId is known
-    io.to(user.socketId).emit("getMessage", {
-      senderId,
-      text,
-    });
-  } else {
-    // Log an error or handle the case where the receiver is not connected
-    console.log(`User with id ${receiverId} is not online.`);
-  }
-});
-
-// seen
-
-socket.on("markMessagesAsSeen", async ({ conversationId, receiver_Id, seen }) => {
-  try {
-      
-    const res = await axios.put(
-      `http://localhost:8800/api/messages/`, // Assuming you need a specific endpoint
-      { conversationId , seen}
-    );
-    
-    console.log("SEENER:", receiver_Id)
-    const user = getUser(receiver_Id); // Correctly find the user to emit the event
-    if(user){
-    io.to(user.socketId).emit("messagesSeen", { conversationId });
+  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
+    const user = getUser(receiverId);
+    if (user && user.socketId) {
+      // Send message to receiver if they are online and socketId is known
+      io.to(user.socketId).emit("getMessage", {
+        senderId,
+        text,
+      });
+    } else {
+      // Log an error or handle the case where the receiver is not connected
+      console.log(`User with id ${receiverId} is not online.`);
     }
+  });
 
-  } catch (err) {
-    console.error(err);
-  }
-});
-		// try {
-		// 	await Message.updateMany({ conversationId: conversationId, seen: false }, { $set: { seen: true } });
-		// 	await Conversation.updateOne({ _id: conversationId }, { $set: { "lastMessage.seen": true } });
-		// 	io.to(userSocketMap[userId]).emit("messagesSeen", { conversationId });
-		// } catch (error) {
-		// 	console.log(error);
-		// }
+  // seen
 
+  socket.on(
+    "markMessagesAsSeen",
+    async ({ conversationId, receiver_Id, seen }) => {
+      try {
+        const res = await axios.put(
+          process.env.API_ENDPOINT, // Assuming you need a specific endpoint
+          { conversationId, seen }
+        );
+
+        const user = getUser(receiver_Id); // Correctly find the user to emit the event
+        if (user) {
+          io.to(user.socketId).emit("messagesSeen", { conversationId });
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  );
 
   //when disconnect
   socket.on("disconnect", () => {
